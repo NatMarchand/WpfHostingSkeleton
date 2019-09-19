@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Windows;
 
 namespace WpfHostingSkeleton
@@ -7,10 +8,7 @@ namespace WpfHostingSkeleton
     {
         private readonly NavigationService _navigationService;
 
-        private App()
-        {
-
-        }
+        private App() { }
 
         public App(NavigationService navigationService)
         {
@@ -19,7 +17,7 @@ namespace WpfHostingSkeleton
 
         protected override void OnStartup(StartupEventArgs e)
         {
-            _navigationService.ShowWindow<MainWindow>(DateTime.UtcNow.ToString());
+            _navigationService.ShowWindow<MainWindow>(DateTime.UtcNow.ToString(CultureInfo.InvariantCulture));
             base.OnStartup(e);
         }
     }
