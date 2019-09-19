@@ -10,14 +10,12 @@ namespace WpfHostingSkeleton
         public static async Task Main(string[] args)
         {
             var host = Host.CreateDefaultBuilder(args)
+                .ConfigureWpfApplication<App>()
                 .ConfigureServices(s =>
                 {
                     s.AddScoped<MainWindow>();
                     s.AddScoped<MainWindowViewModel>();
-
-                    s.AddSingleton<App>();
                     s.AddSingleton<NavigationService>();
-                    s.AddSingleton<IHostedService, AppHostService>();
                 })
                 .Build();
             await host.RunAsync();

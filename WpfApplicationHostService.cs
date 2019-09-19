@@ -1,39 +1,39 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 namespace WpfHostingSkeleton
 {
-    public class AppHostService : IHostedService
+    public class WpfApplicationHostService<TApplication> : IHostedService where TApplication: Application
     {
         private readonly Thread _thread;
         private event Action OnStopRequested;
 
-        public AppHostService(IServiceProvider serviceProvider, IHostApplicationLifetime hostApplicationLifetime)
+        public WpfApplicationHostService(IServiceProvider serviceProvider, IHostApplicationLifetime hostApplicationLifetime)
         {
             _thread = new Thread(() =>
             {
-                var app = serviceProvider.GetRequiredService<App>();
+                var app = serviceProvider.GetRequiredService<TApplication>();
 
                 void ShutdownApp()
                 {
-                    app.Dispatcher.Invoke(() =>app.Shutdown());
-                    OnStopRequested -= ShutdownApp;
-                }
-
-                void StopApplication(object sender, EventArgs e)
-                {
-                    OnStopRequested -= ShutdownApp;
-                    app.Exit -= StopApplication;
-                    hostApplicationLifetime.StopApplication();
+                    app.Dispatcher.Invoke(() => app.Shutdown());
                 }
 
                 OnStopRequested += ShutdownApp;
-                app.Exit += StopApplication;
 
-                app.Run();
+                try
+                {
+                    app.Run();
+                }
+                finally
+                {
+                    OnStopRequested -= ShutdownApp;
+                    hostApplicationLifetime.StopApplication();
+                }
             });
         }
 
