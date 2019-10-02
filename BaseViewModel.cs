@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Runtime.CompilerServices;
 
 namespace WpfHostingSkeleton
 {
@@ -24,7 +23,7 @@ namespace WpfHostingSkeleton
         public bool IsNotBusy => !IsBusy;
 
         public event PropertyChangedEventHandler PropertyChanged;
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        protected virtual void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }

@@ -20,17 +20,8 @@ namespace WpfHostingSkeleton
 
         public TWindow ShowWindow<TWindow>(Action<TWindow> configureWindow, params object[] parameters) where TWindow : Window
         {
-            var scope = _scopeFactory.CreateScope();
-            var window = ActivatorUtilities.CreateInstance<TWindow>(scope.ServiceProvider, parameters);
-            void DisposeScope(object o, EventArgs e)
-            {
-                scope.Dispose();
-                window.Closed -= DisposeScope;
-            }
-            configureWindow?.Invoke(window);
-            window.Closed += DisposeScope;
+            var window = PrepareWindow(configureWindow, parameters);
             window.Show();
-
             return window;
         }
 
@@ -41,6 +32,12 @@ namespace WpfHostingSkeleton
 
         public bool? ShowDialog<TWindow>(Action<TWindow> configureWindow = null, params object[] parameters) where TWindow : Window
         {
+            var window = PrepareWindow(configureWindow, parameters);
+            return window.ShowDialog();
+        }
+
+        private TWindow PrepareWindow<TWindow>(Action<TWindow> configureWindow, params object[] parameters) where TWindow : Window
+        {
             var scope = _scopeFactory.CreateScope();
             var window = ActivatorUtilities.CreateInstance<TWindow>(scope.ServiceProvider, parameters);
             void DisposeScope(object o, EventArgs e)
@@ -50,7 +47,7 @@ namespace WpfHostingSkeleton
             }
             configureWindow?.Invoke(window);
             window.Closed += DisposeScope;
-            return window.ShowDialog();
+            return window;
         }
     }
 }
